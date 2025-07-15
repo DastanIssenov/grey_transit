@@ -1,32 +1,41 @@
 import streamlit as st
 import pandas as pd
 from io import BytesIO
+import zipfile
+
+def read_single_csv_from_zip(uploaded_file):
+    with zipfile.ZipFile(uploaded_file) as z:
+        # Get list of files that are not hidden/macOS junk
+        valid_files = [f for f in z.namelist() if f.endswith('.csv') and '__MACOSX' not in f and not f.startswith('.')]
+        if len(valid_files) != 1:
+            raise ValueError(f"Expected 1 CSV file, found {len(valid_files)}: {valid_files}")
+        return pd.read_csv(z.open(valid_files[0]))
 
 st.set_page_config(page_title="Grey Transit Matcher", layout="wide")
 st.title("🚂 Grey Transit Data Processor")
 
-st.subheader("1. Upload 3 Import Files and 3 Export Files")
+st.subheader("1. Upload 3 Import and 3 Export `.csv.zip` Files")
 
-# Upload import files
-im_10 = st.file_uploader("Upload Import File Q1", type="csv", key="im10")
-im_11 = st.file_uploader("Upload Import File Q2", type="csv", key="im11")
-im_12 = st.file_uploader("Upload Import File Q3", type="csv", key="im12")
+# Upload zipped import files
+im_10 = st.file_uploader("Upload Import File Q1 (.csv.zip)", type="zip", key="im10")
+im_11 = st.file_uploader("Upload Import File Q2 (.csv.zip)", type="zip", key="im11")
+im_12 = st.file_uploader("Upload Import File Q3 (.csv.zip)", type="zip", key="im12")
 
-# Upload export files
-ex_10 = st.file_uploader("Upload Export File Q1", type="csv", key="ex10")
-ex_11 = st.file_uploader("Upload Export File Q2", type="csv", key="ex11")
-ex_12 = st.file_uploader("Upload Export File Q3", type="csv", key="ex12")
+# Upload zipped export files
+ex_10 = st.file_uploader("Upload Export File Q1 (.csv.zip)", type="zip", key="ex10")
+ex_11 = st.file_uploader("Upload Export File Q2 (.csv.zip)", type="zip", key="ex11")
+ex_12 = st.file_uploader("Upload Export File Q3 (.csv.zip)", type="zip", key="ex12")
 
 # Proceed if all files are uploaded
 if all([im_10, im_11, im_12, ex_10, ex_11, ex_12]):
-    # try:
-    # Read all files
-    im_10_df = pd.read_csv(im_10)
-    im_11_df = pd.read_csv(im_11)
-    im_12_df = pd.read_csv(im_12)
-    ex_10_df = pd.read_csv(ex_10)
-    ex_11_df = pd.read_csv(ex_11)
-    ex_12_df = pd.read_csv(ex_12)
+
+    # Read zipped CSVs
+    im_10_df = read_single_csv_from_zip(im_10)
+    im_11_df = read_single_csv_from_zip(im_11)
+    im_12_df = read_single_csv_from_zip(im_12)
+    ex_10_df = read_single_csv_from_zip(ex_10)
+    ex_11_df = read_single_csv_from_zip(ex_11)
+    ex_12_df = read_single_csv_from_zip(ex_12)
 
     # Intersection and concat for export
     common_columns_ex = ex_10_df.columns.intersection(ex_11_df.columns).intersection(ex_12_df.columns)
