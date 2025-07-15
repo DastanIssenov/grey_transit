@@ -53,10 +53,7 @@ if all([im_10, im_11, im_12, ex_10, ex_11, ex_12]):
     import_all = pd.concat([im_10_df[common_columns_im], im_11_df[common_columns_im], im_12_df[common_columns_im]], ignore_index=True)
 
     # --- Continue previous transformation ---
-    ex_12_df.rename(columns={'Станция назначения.1': 'Станция отправления',
-                         'Наименование станции назначения.1':'Наименование станции отправления'}, inplace=True)
-
-    ex_11_df.rename(columns = {"Наименование станции назнаения": "Наименование станции назначения"}, inplace=True)
+    
 
 
     common_columns_ex = ex_10_df.columns.intersection(ex_11_df.columns).intersection(ex_12_df.columns)
@@ -65,8 +62,11 @@ if all([im_10, im_11, im_12, ex_10, ex_11, ex_12]):
 
     common_columns_im = im_10_df.columns.intersection(im_11_df.columns).intersection(im_12_df.columns)
     import_all = pd.concat([im_10_df[common_columns_im], im_11_df[common_columns_im], im_12_df[common_columns_im]], ignore_index=True)
+
     import_all = import_all[import_all['Наименование ГП'].notna()]
+    export_all = export_all[export_all['Наименование ГП'].notna()]
     import_all["Наименование ГП"] = import_all["Наименование ГП"].apply(lambda x: x.replace('ТОВАРИЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "QAZEXPOCENTRE - PIPE"', 'ТОО "QAZEXPOCENTRE - PIPE"'))
+    export_all["Наименование ГП"] = export_all["Наименование ГП"].apply(lambda x: x.replace('ТОВАРИЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "QAZEXPOCENTRE - PIPE"', 'ТОО "QAZEXPOCENTRE - PIPE"'))
 
 
 
@@ -97,7 +97,7 @@ if all([im_10, im_11, im_12, ex_10, ex_11, ex_12]):
                             'Код грузоотправителя', 'Дата отправления',
                             'Взыскано при отправления  (последние 2 знака тиыны)']]
 
-    print((export_df[['Номер вагона_y', 'Наименование ГО', 'Станция отправления', "Вес на вагон (кг)_y"]]).shape, (import_df[['Номер вагона_x', 'Наименование ГП', 'Станция назначения', "Вес на вагон (кг)_x"]]).shape)
+
 
     import_df['Дата прибытия'] = pd.to_datetime(import_df['Дата прибытия'], dayfirst=True, errors='coerce')
     export_df['Дата отправления'] = pd.to_datetime(export_df['Дата отправления'], dayfirst=True, errors='coerce')
