@@ -3,6 +3,32 @@ import pandas as pd
 from io import BytesIO
 import zipfile
 
+USER_CREDENTIALS = {
+    "ktzh": "ktzhpass"
+}
+
+def login():
+    st.title("🔒 Login Required")
+    with st.form("login_form"):
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        submitted = st.form_submit_button("Login")
+
+        if submitted:
+            if USER_CREDENTIALS.get(username) == password:
+                st.session_state.logged_in = True
+                st.rerun()
+            else:
+                st.error("Invalid username or password")
+
+# Initialize session state
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if not st.session_state.logged_in:
+    login()
+    st.stop()
+
 def convert_df_to_excel(df):
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
