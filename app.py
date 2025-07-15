@@ -3,6 +3,13 @@ import pandas as pd
 from io import BytesIO
 import zipfile
 
+def convert_df_to_excel(df):
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Grey Transit')
+    output.seek(0)
+    return output
+
 def read_single_csv_from_zip(uploaded_file):
     with zipfile.ZipFile(uploaded_file) as z:
         # Get list of files that are not hidden/macOS junk
@@ -115,17 +122,13 @@ if all([im_10, im_11, im_12, ex_10, ex_11, ex_12]):
     st.dataframe(grey_transit, use_container_width=True)
 
     st.subheader("3. Download Result")
-    def convert_df(df):
-        output = BytesIO()
-        df.to_csv(output, index=False)
-        return output.getvalue()
-
-    csv = convert_df(grey_transit)
+    
+    excel_file = convert_df_to_excel(grey_transit)
     st.download_button(
-        label="📥 Download Grey Transit CSV",
-        data=csv,
-        file_name="grey_transit_quarter_2024_Q4.csv",
-        mime="text/csv",
+        label="📥 Download Grey Transit Excel",
+        data=excel_file,
+        file_name="grey_transit_quarter_2024_Q4.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
 
     # except Exception as e:
