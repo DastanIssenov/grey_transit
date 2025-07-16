@@ -3,6 +3,8 @@ import pandas as pd
 from io import BytesIO
 import zipfile
 
+# login procedure
+# This is a simple login mechanism for demonstration purposes.
 USER_CREDENTIALS = {
     "ktzh": "ktzhpass"
 }
@@ -47,57 +49,36 @@ def read_single_csv_from_zip(uploaded_file):
 st.set_page_config(page_title="Grey Transit Matcher", layout="wide")
 st.title("🚂 Grey Transit Data Processor")
 
-st.subheader("1. Upload 3 Import and 3 Export `.csv.zip` Files")
+st.subheader("1. Upload Import and Export `.csv.zip` Files")
 
 # Upload zipped import files
-im_10 = st.file_uploader("Upload Import File Q1 (.csv.zip)", type="zip", key="im10")
-im_11 = st.file_uploader("Upload Import File Q2 (.csv.zip)", type="zip", key="im11")
-im_12 = st.file_uploader("Upload Import File Q3 (.csv.zip)", type="zip", key="im12")
+import_file = st.file_uploader("Upload Import File Q1 (.csv.zip)", type="zip", key="import_file")
 
 # Upload zipped export files
-ex_10 = st.file_uploader("Upload Export File Q1 (.csv.zip)", type="zip", key="ex10")
-ex_11 = st.file_uploader("Upload Export File Q2 (.csv.zip)", type="zip", key="ex11")
-ex_12 = st.file_uploader("Upload Export File Q3 (.csv.zip)", type="zip", key="ex12")
+export_file = st.file_uploader("Upload Export File Q1 (.csv.zip)", type="zip", key="export_file")
 
 # Proceed if all files are uploaded
-if all([im_10, im_11, im_12, ex_10, ex_11, ex_12]):
+if all([import_file, export_file]):
 
     # Read zipped CSVs
-    im_10_df = read_single_csv_from_zip(im_10)
-    im_11_df = read_single_csv_from_zip(im_11)
-    im_12_df = read_single_csv_from_zip(im_12)
-    ex_10_df = read_single_csv_from_zip(ex_10)
-    ex_11_df = read_single_csv_from_zip(ex_11)
-    ex_12_df = read_single_csv_from_zip(ex_12)
+    export_df = read_single_csv_from_zip(export_file)
+    import_df = read_single_csv_from_zip(import_file)
 
     # Intersection and concat for export
-    common_columns_ex = ex_10_df.columns.intersection(ex_11_df.columns).intersection(ex_12_df.columns)
-    export_all = pd.concat([ex_10_df[common_columns_ex], ex_11_df[common_columns_ex], ex_12_df[common_columns_ex]], ignore_index=True)
+    # common_columns_ex = ex_10_df.columns.intersection(ex_11_df.columns).intersection(ex_12_df.columns)
+    # export_all = pd.concat([ex_10_df[common_columns_ex], ex_11_df[common_columns_ex], ex_12_df[common_columns_ex]], ignore_index=True)
 
-    # Intersection and concat for import
-    common_columns_im = im_10_df.columns.intersection(im_11_df.columns).intersection(im_12_df.columns)
-    import_all = pd.concat([im_10_df[common_columns_im], im_11_df[common_columns_im], im_12_df[common_columns_im]], ignore_index=True)
+    # # Intersection and concat for import
+    # common_columns_im = im_10_df.columns.intersection(im_11_df.columns).intersection(im_12_df.columns)
+    # import_all = pd.concat([im_10_df[common_columns_im], im_11_df[common_columns_im], im_12_df[common_columns_im]], ignore_index=True)
 
     # --- Continue previous transformation ---
-    
 
 
-    common_columns_ex = ex_10_df.columns.intersection(ex_11_df.columns).intersection(ex_12_df.columns)
-    export_all = pd.concat([ex_10_df[common_columns_ex], ex_11_df[common_columns_ex], ex_12_df[common_columns_ex]], ignore_index=True)
-
-
-    common_columns_im = im_10_df.columns.intersection(im_11_df.columns).intersection(im_12_df.columns)
-    import_all = pd.concat([im_10_df[common_columns_im], im_11_df[common_columns_im], im_12_df[common_columns_im]], ignore_index=True)
-
-    import_all = import_all[import_all['Наименование ГП'].notna()]
-    export_all = export_all[export_all['Наименование ГП'].notna()]
-    import_all["Наименование ГП"] = import_all["Наименование ГП"].apply(lambda x: x.replace('ТОВАРИЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "QAZEXPOCENTRE - PIPE"', 'ТОО "QAZEXPOCENTRE - PIPE"'))
-    export_all["Наименование ГП"] = export_all["Наименование ГП"].apply(lambda x: x.replace('ТОВАРИЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "QAZEXPOCENTRE - PIPE"', 'ТОО "QAZEXPOCENTRE - PIPE"'))
-
-
-
-    import_df = import_all.copy()
-    export_df = export_all.copy()
+    # import_df = import_df[import_df['Наименование ГП'].notna()]
+    # export_df = export_df[export_df['Наименование ГП'].notna()]
+    # import_df["Наименование ГП"] = import_df["Наименование ГП"].apply(lambda x: x.replace('ТОВАРИЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "QAZEXPOCENTRE - PIPE"', 'ТОО "QAZEXPOCENTRE - PIPE"'))
+    # export_df["Наименование ГП"] = export_df["Наименование ГП"].apply(lambda x: x.replace('ТОВАРИЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "QAZEXPOCENTRE - PIPE"', 'ТОО "QAZEXPOCENTRE - PIPE"'))
 
 
     import_df.rename(columns={"Вес на вагон (кг)": "Вес на вагон (кг)_x",
