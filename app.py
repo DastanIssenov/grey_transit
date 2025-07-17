@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 import zipfile
+import plotly.graph_objects as go
 
 # login procedure
 # This is a simple login mechanism for demonstration purposes.
@@ -30,6 +31,20 @@ if "logged_in" not in st.session_state:
 if not st.session_state.logged_in:
     login()
     st.stop()
+
+def card(title, text, color):
+        return st.markdown(f"""
+        <div style="
+            background-color: #1E1E1E;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid {color};
+            margin-bottom: 10px;
+        ">
+            <h4 style="color: {color}; margin: 0;">{title}</h4>
+            <h2 style="color: {color}; margin: 0;">{text}</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
 def convert_df_to_excel(df):
     output = BytesIO()
@@ -156,10 +171,37 @@ if all([import_file, export_file]):
 
     st.success(f"Successfully matched")
 
+
+    
     grey_transit_wagons_3 = pd.read_csv("filtered_all.csv")
     filter_2 = pd.read_csv("filtered_2.csv")
     filter_1 = pd.read_csv("filtered_1.csv")
     filter_0 = pd.read_csv("filtered_0.csv")
+    # Use columns for layout
+    col1, col2 = st.columns(2)
+
+    with col1:
+        card("Высокая вероятность теневого транзита", f"{len(grey_transit_wagons_3)}", "#FF0000")
+        card("Средняя вероятность теневого транзита", f"{len(filter_2)}", "#FFA500")
+
+    with col2:
+        card("Умеренно высокая вероятность теневого транзита", f"{len(filter_1)}", "#FF4500")
+        card("Низкая вероятность теневого транзита", f"{len(filter_0)}", "#FFFF00")
+
+
+    
+
+    # labels = ['Высокая вероятность теневого транзита', 'Умеренно высокая вероятность теневого транзита', 'Средняя вероятность теневого транзита', 'Низкая вероятность теневого транзита']
+    # values = [len(grey_transit_wagons_3), len(filter_2), len(filter_1), len(filter_0)]
+    # colors = ['#FF0000', '#FF4500', '#FFA500', '#FFFF00']
+
+    # fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.5, marker=dict(colors=colors))])
+    # fig.update_layout(title_text='Contract Expiring')
+
+    # st.plotly_chart(fig, use_container_width=True)
+
+
+    
 
     st.markdown(
     f'<h3 style="color:#FF0000;">Совподение по Номеру вагона, Коду груза + Грузо-получатель/отправитель, Станция назначения/отправления, Вес вагона</h3>',
