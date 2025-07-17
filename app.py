@@ -156,10 +156,10 @@ if all([import_file, export_file]):
 
     st.success(f"Successfully matched")
 
-    grey_transit_wagons_3 = pd.read_csv("filtered_all.csv", index=False)
-    filter_2 = pd.read_csv("filtered_2.csv", index=False)
-    filter_1 = pd.read_csv("filtered_1.csv", index=False)
-    filter_0 = pd.read_csv("filtered_0.csv", index=False)
+    grey_transit_wagons_3 = pd.read_csv("filtered_all.csv")
+    filter_2 = pd.read_csv("filtered_2.csv")
+    filter_1 = pd.read_csv("filtered_1.csv")
+    filter_0 = pd.read_csv("filtered_0.csv")
 
     st.markdown(
     f'<h3 style="color:#FF0000;">Совподение по Номеру вагона, Коду груза + Грузо-получатель/отправитель, Станция назначения/отправления, Вес вагона</h3>',
